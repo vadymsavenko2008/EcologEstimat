@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="uk">
+    <head>
+        <title>EcologEstimat</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <style>
+            body {
+                background-color:#d8a9ff;
+                font-family: 'Segoe UI';
+            }
+            
+            .main {
+                background-color:#ffffff;
+                padding: 20px;
+                margin: 20px;
+                margin-left: auto;
+                margin-right: auto;
+                width: 600px;
+            }
+            .div{
+                background-color: #f1f1f1;
+                padding: 10px;
+            }
+
+            input[type="text"], input[type="number"] {
+                width: 100%;
+                margin: -5px;
+                margin-top: 10px;
+            }
+            select {
+                margin-top: 10px;
+            }
+        </style>
+        <script>
+            function hideAllPages() {
+                document.getElementById("AirPage").style.display = "none";
+                document.getElementById("GreenZonePage").style.display = "none";
+                document.getElementById("TrafficPage").style.display = "none";
+                document.getElementById("AeraSolarPanelsPage").style.display = "none";
+            }
+            function toggleSolarInputs() {
+                let selectedSolarPanel = document.querySelector('input[name="solarEnergyChoise"]:checked');
+                if (!selectedSolarPanel) {
+                    return;
+                }
+                if (selectedSolarPanel.value === "E") {
+                    document.getElementById("energyValue").disabled = false;
+                    document.getElementById("effectionOfPanel").disabled = true;
+                    document.getElementById("potentialOfPanel").disabled = true;
+                } else if (selectedSolarPanel.value === "P") {
+                    document.getElementById("energyValue").disabled = true;
+                    document.getElementById("effectionOfPanel").disabled = false;
+                    document.getElementById("potentialOfPanel").disabled = false;
+                }
+            }
+            document.addEventListener('DOMContentLoaded', (event) => {
+                hideAllPages();
+                toggleSolarInputs();
+                document.getElementById("AirPage").style.display = "block";
+                document.querySelectorAll('input[name="solarEnergyChoise"]').forEach(radio => {
+                    radio.addEventListener('change', toggleSolarInputs);
+                });
+            });
+
+            function showPage(idpage) {
+                hideAllPages();
+                document.getElementById(idpage).style.display = "block";
+            }
+            function resultAir() {
+                // RESULT
+
+                resultDiv.style.display = 'block';
+                let result = document.getElementById('resultAir');
+                let place = document.getElementById('place').value;
+                result.innerHTML = "<p>В населеному пункті \"" + place + "\" відбувається дана ситуація:</p>"
+
+
+                // RADIATION
+
+                let radiation = parseFloat(document.getElementById('radiation').value);
+                if (radiation <= 0.3) {
+                    result.innerHTML += "<p>Радіоактивне випромінвання є <b>нормальним</b>, бо в населеному пункті радіоактивне випромінювання становить " + String(radiation) + ", що є менше ніж максимальної норми - 0.3 мкЗв/год.</p>";
+                }
+                else if (radiation > 0.3 && radiation <= 1.2) {
+                    result.innerHTML += "<p>Радіоактивне випромінвання є <b>підвищиним</b>, бо в населеному пункті радіоактивне випромінювання становить " + String(radiation) + ", що є більше ніж максимальної норми - 0.3 мкЗв/год, але менше максимально-допустимої норми - 1.2 мкЗв/год. Ця ситуація не є добрим, але для виправлення даної проблеми треба земншити радіоактивне випромінення, щоб воно не більше ніж 1.2 мкЗв/год. Для зменшення радіоактивого випромінення потрібно ТРЕБА.</p>";
+                }
+                else {
+                    result.innerHTML += "<p>Радіоактивне випромінвання є <b>небезпечним</b>, бо в населеному пункті радіоактивне випромінювання становить " + String(radiation) + ", що вище 1.2 мкЗв/год. Це може призвсти до онкологічних захворювань у населення. Щоб снизити радіоактивне випромінювання, треба ТРЕБА.</p>";
+                }
+
+
+                // NOISY
+
+                let noisy = parseFloat(document.getElementById('noisy').value);
+                if (noisy <= 80) {
+                    result.innerHTML += "<p>Шумове забруднення є <b>нормальним</b>, бо в населеному пункті шумове забруднення становить " + String(noisy) + ", що є не більше ніж максимальної норми - 80 дБ.</p>";
+                }
+                else {
+                    result.innerHTML += "<p>Шумове забруднення є <b>небезпечним</b>, бо в населеному пункті шумове забруднення становить " + String(noisy) + ", що вище 80 дБ. Це може призвсти до підвищення артеріального тиску та ризику інфаркту у населення. Щоб снизити радіоактивне випромінювання, треба зменшити трафік на дорогах, встановлення шумозахисних екранів вздовш автомагистралей, обмежити швиткість автомбілів, обмеження робочого часу на промислових та будівелних точках, встановлювати звукоізоляцію, заміна застарілого гучного обладнання на тихе нове та відокремити житлові райони від автомагистралів.</p>";
+                }
+
+
+                // PRESSURE
+
+                let pressure = parseFloat(document.getElementById('pressure').value);
+                if (pressure > 809) {
+                    result.innerHTML += "<p>Атмосферний тиск <b>підвищений</b> за норми (Антициклон), бо в населеному пункті атмосферний тиск становить " + String(pressure) + ", що є більше ніж максимальної норми - 809 мм рт. ст. Він зазвичай супроводжується підвищеною вологістю, хмарністю, опадами і невеликим підвищенням температури. Це може призвести в людей до: загальної слабкості; утрудненного дихання; нестачу повітря; задишок. Оскільки атмосферний тиск залежить від температури повітря, висоти від рівнини та рівня моря, атмосферний тик можна змітити лише за цими факторами.</p>";
+                }
+                else if (pressure < 684) {
+                    result.innerHTML += "<p>Атмосферний тиск є <b>пониженим</b> за норми (Циклон), бо в населеному пункті атмосферний тиск становить " + String(pressure) + ", що є менше ніж мініимальної норми - 684 мм рт. ст. Він, як правило, супроводжується ясною безвітряною погодою й відсутністю різких перепадів рівня вологості або температури. Це може призвести в людей до: серцеві і головні болі; зниження працездатності; загальна слабкість; нездужання. Оскільки атмосферний тиск залежить від температури повітря, висоти від рівнини та рівня моря, атмосферний тик можна змітити лише за цими факторами.</p>";
+                }
+                else {
+                    result.innerHTML += "<p>Атмосферний тиск є <b>нормальним</b>, бо в населеному пункті атмосферний тиск становить " + String(pressure) + ", що знаходиться в межі від 684 по 809 мм рт. ст.</p>";
+                }
+
+
+                // MOISTURE
+
+                let hum = parseFloat(document.getElementById('hum').value);
+                if (hum > 60 || hum < 40){
+                    result.innerHTML += '<p>В даному населеному пункті вологість <b>нестабільна</b>, бо складає ' + hum + '%, що не входить до діапазону від 40 до 60%. Для стабілізації вологості треба ТРЕБА.</p>';
+                } else {
+                    result.innerHTML += '<p>В даному населеному пункті вологість <b>стабільна</b>, бо складає ' + hum + '%, що входить до діапазону від 40 до 60%.</p>';
+                }
+
+
+                // ГДК
+
+                let co = parseFloat(document.getElementById('co').value) / 3;
+                if (co <= 3) {
+                    result.innerHTML += '<p>Кількість чадного газу (CO) становить ' + co + ' мг/м<sup>3</sup>, що є <b>нормальним</b>.</p>';
+                } else {
+                    result.innerHTML += '<p>Кількість чадного газу (CO) становить ' + co + ' мг/м<sup>3</sup>, що є <b>небезпечним</b>.</p>';
+                }
+                
+                let nox = parseFloat(document.getElementById('nox').value) / 0.06;
+                if (nox <= 0.06) {
+                    result.innerHTML += '<p>Кількість оксиду азоту (NO<sub>X</sub>) становить ' + nox + ' мг/м<sup>3</sup>, що є <b>нормальним</b>.</p>';
+                } else {
+                    result.innerHTML += '<p>Кількість оксиду азоту (NO<sub>X</sub>) становить ' + nox + ' мг/м<sup>3</sup>, що є <b>небезпечним</b>.</p>';
+                }
+
+                let nh3 = parseFloat(document.getElementById('nh3').value) / 0.04;
+                if (nh3 <= 0.04) {
+                    result.innerHTML += '<p>Кількість аміаку (NH<sub>3</sub>) становить ' + nh3 + ' мг/м<sup>3</sup>, що є <b>нормальним</b>.</p>';
+                } else {
+                    result.innerHTML += '<p>Кількість аміаку (NH<sub>3</sub>) становить ' + nh3 + ' мг/м<sup>3</sup>, що є <b>небезпечним</b>.</p>';
+                }
+                
+                let c6h6 = parseFloat(document.getElementById('c6h6').value) / 5;
+                if (nox <= 5) {
+                    result.innerHTML += '<p>Кількість бензолу (C<sub>6</sub>H<sub>6</sub>) становить ' + c6h6 + ' мг/м<sup>3</sup>, що є <b>нормальним</b>.</p>';
+                } else {
+                    result.innerHTML += '<p>Кількість бензолу (C<sub>6</sub>H<sub>6</sub>) становить ' + c6h6 + ' мг/м<sup>3</sup>, що є <b>небезпечним</b>.</p>';
+                }
+            }
+            
+            function resultGreenZone() {
+                let addressGreenZone = document.getElementById('addressGreenZone').value;
+                let CO = parseFloat(document.getElementById('CO').value);
+
+                let f = [];
+
+                xCO = (0.5 * CO - 3)/0.1;
+                f.push(xCO);
+
+                let result = "Зелена зона від " + addressGreenZone + " повинна складати " + Math.max(f) + " м.";
+                document.getElementById('resultGreenZone').textContent = result;
+                document.getElementById('resultGreenZonePageDiv').style.display = 'block';
+            }
+            
+            function resultTraffic() {
+                a = parseInt(document.getElementById('cars').value);
+                b = parseInt(document.getElementById('trucks').value);
+                c = parseInt(document.getElementById('buses').value);
+                s = parseInt(document.getElementById('speed').value);
+                i = parseInt(document.getElementById('slope').value);
+
+                st = document.getElementById('streetName').value;
+                f = parseInt(document.getElementById('startBuilding').value);
+                l = parseInt(document.getElementById('endBuilding').value);
+
+                let sum = a + b + c;
+
+                let n = b + c;
+                let percent = (n / sum) * 100;
+                let K1 = 0;
+                if (percent >= 80) {
+                    if (s >= 80) K1 = 1.21;
+                    else if (s >= 70) K1 = 0.11;
+                    else if (s >= 60) K1 = 1.02;
+                    else if (s >= 50) K1 = 0.90;
+                    else if (s >= 40) K1 = 1.05;
+                    else if (s >= 30) K1 = 1.11;
+                    else if (s >= 20) K1 = 1.17;
+                }
+
+                else if (percent >= 70) {
+                    if (s >= 80) K1 = 1.12;
+                    else if (s >= 70) K1 = 1.04;
+                    else if (s >= 60) K1 = 0.95;
+                    else if (s >= 50) K1 = 0.87;
+                    else if (s >= 40) K1 = 1.00;
+                    else if (s >= 30) K1 = 1.08;
+                    else if (s >= 20) K1 = 1.14;
+                }
+
+                else if (percent >= 60) {
+                    if (s >= 80) K1 = 1.12;
+                    else if (s >= 70) K1 = 1.04;
+                    else if (s >= 60) K1 = 0.95;
+                    else if (s >= 50) K1 = 0.87;
+                    else if (s >= 40) K1 = 1.00;
+                    else if (s >= 30) K1 = 1.08;
+                    else if (s >= 20) K1 = 1.12;
+                }
+
+                else if (percent >= 50) {
+                    if (s >= 80) K1 = 0.95;
+                    else if (s >= 70) K1 = 0.90;
+                    else if (s >= 60) K1 = 0.84;
+                    else if (s >= 50) K1 = 0.80;
+                    else if (s >= 40) K1 = 0.91;
+                    else if (s >= 30) K1 = 1.01;
+                    else if (s >= 20) K1 = 1.11;
+                }
+
+                else if (percent >= 40) {
+                    if (s >= 80) K1 = 0.85;
+                    else if (s >= 70) K1 = 0.78;
+                    else if (s >= 60) K1 = 0.77;
+                    else if (s >= 50) K1 = 0.76;
+                    else if (s >= 40) K1 = 0.86;
+                    else if (s >= 30) K1 = 0.97;
+                    else if (s >= 20) K1 = 1.09;
+                }
+
+                else if (percent >= 30) {
+                    if (s >= 80) K1 = 0.75;
+                    else if (s >= 70) K1 = 0.66;
+                    else if (s >= 60) K1 = 0.70;
+                    else if (s >= 50) K1 = 0.73;
+                    else if (s >= 40) K1 = 0.82;
+                    else if (s >= 30) K1 = 0.95;
+                    else if (s >= 20) K1 = 1.08;
+                }
+
+                else if (percent >= 20) {
+                    if (s >= 80) K1 = 0.67;
+                    else if (s >= 70) K1 = 0.70;
+                    else if (s >= 60) K1 = 0.62;
+                    else if (s >= 50) K1 = 0.69;
+                    else if (s >= 40) K1 = 0.77;
+                    else if (s >= 30) K1 = 0.91;
+                    else if (s >= 20) K1 = 1.05;
+                }
+
+                else if (percent >= 10) {
+                    if (s >= 80) K1 = 0.55;
+                    else if (s >= 70) K1 = 0.46;
+                    else if (s >= 60) K1 = 0.54;
+                    else if (s >= 50) K1 = 0.65;
+                    else if (s >= 40) K1 = 0.72;
+                    else if (s >= 30) K1 = 0.81;
+                    else if (s >= 20) K1 = 1.02;
+                }
+                let K2 = 1 + ((3 * i) / 100);
+                let COMAX = (7.33 + 0.026 * sum) * K1 * K2;
+                let COGDK = 3.0;
+                let x = (0.5 * COMAX - COGDK)/0.1
+                let result = "Для дороги на " + st + " від будинку №" + f + " до №" + l + " треба зробити ширину санітарно-захисної зони для даного трафіку: " + Math.round(x) + " м.";
+                document.getElementById('resultTraffic').textContent = result;
+                document.getElementById('resultDivGreenZonePage').style.display = 'block';
+            }
+
+            function resultSolarAeraPanels() {
+                document.getElementById("resultSolarDiv").style.display = 'block';
+                let selectedSolarPanel = document.querySelector('input[name="solarEnergyChoise"]:checked');
+                if (selectedSolarPanel.value === "E") {
+                    es = parseFloat(document.getElementById("energyValue").value);
+                } else if (selectedSolarPanel.value === "P") {
+                    let efficiency = parseFloat(document.getElementById("effectionOfPanel").value);
+                    let potential = parseFloat(document.getElementById("potentialOfPanel").value);
+                    es = potential * (efficiency / 100);
+                }
+                let ef = parseFloat(document.getElementById("energyFromFuel").value);
+                if (isNaN(es) || isNaN(ef) || es <= 0 || ef <= 0) {
+                    document.getElementById("resultSolarAeraPanels").innerHTML = 
+                        "Введено невірні дані. Будь ласка, переконайтеся, що всі поля заповнені числами, більшими за нуль.";
+                    return;
+                }
+                s = ef / es;
+                document.getElementById("resultSolarAeraPanels").innerHTML = 
+                    `<p>Потрібна площа сонячних панелей становить: <b>${s.toFixed(2)} м²</b></p>`;
+            }
+        </script>
+        <div class="main">
+            <h1>EcologEstimat</h1>
+            <p>
+                Калькулятор для підрахування стану атмосфери та визначення рішень
+                для бородьби з забрудненням навколишнього середовища, визначення зеленої зони та 
+                трафіку дороги.
+            </p>
+            <button onclick="showPage('AirPage')">Забрудненість навколишнього середовища</button>
+            <button onclick="showPage('GreenZonePage')">Санітарно-захисна зона</button>
+            <button onclick="showPage('TrafficPage')">Трафік дороги</button>
+            <button onclick="showPage('AeraSolarPanelsPage')">Потрібна площа сонячний панелей</button>
+
+
+            <div id="AirPage">
+                <h2>Забрудненість навколишнього середовища</h2>
+                <div class="div">
+                    <h3>Населений пункт</h3>
+                    <input type="text" id="place">
+                </div>
+                <br>
+                <div class="div">
+                    <h3>Радіоактивне випромінювання (мкЗв/год)</h3>
+                    <p>Вкажіть кількість радіоактивного випромінювання в мкЗв/год даного населеного пункту</p>
+                    <input type="number" id="radiation" placeholder="Кількість радіоактивного випромінювання" min="0">
+                </div>
+                <br>
+                <div class="div">
+                    <h3>Шумове забруднення (дБ)</h3>
+                    <p>Вкажіть кількість шумового забруднення в дБ даного населеного пункту</p>
+                    <input type="number" id="noisy" placeholder="Кількість шумового забруднення" min="0">
+                </div>
+                <br>
+                <div class="div">
+                    <h3>Атмосферний тиск (Міліметр ртутного стовпа)</h3>
+                    <p>Вкажіть атмосферний тиск в мілімтрах ртутного стовпа даного населеного пункту</p>
+                    <input type="number" id="pressure" placeholder="Атмосферний тиск" min="0">
+                </div>
+                <br>
+                <div class="div">
+                    <h3>Вологість (Відсоток)</h3>
+                    <p>Вкажіть вологість у відсотках даного населеного пункту</p>
+                    <input type="number" id="hum" placeholder="Вологість" min="0" max="100">
+                </div>
+                <br>
+                <div class="div">
+                    <h3>Гранично допутима концентрація шкідливих речовин у повітрі</h3>
+                    <p>Вкажіть кількість чадного газу (CO) в мг/м<sup>3</sup> у даному населеному пункті</p>
+                    <input type="number" id="co" placeholder="Чадний газ (CO)" min="0">
+                    <p>Вкажіть кількість оксиду азоту (NO<sub>X</sub>) в мг/м<sup>3</sup> у даному населеному пункті</p>
+                    <input type="number" id="nox" placeholder="Оксид азоту (NOx)" min="0">
+                    <p>Вкажіть кількість аміаку (NH<sub>3</sub>) в мг/м<sup>3</sup> у даному населеному пункті</p>
+                    <input type="number" id="nh3" placeholder="Аміак (NH3)" min="0">
+                    <p>Вкажіть кількість бензолу (C<sub>6</sub>H<sub>6</sub>) в мг/м<sup>3</sup> у даному населеному пункті</p>
+                    <input type="number" id="c6h6" placeholder="Бензол (C6H6)" min="0">
+                </div>
+                <br>
+                <center>
+                        <button type="submit" onclick="resultAir()">Отримати результат</button>
+                </center>
+                <br>
+                <div class="div" style="display: none;" id="resultDiv">
+                    <h3>Результат</h3>
+                    <p id="resultAir"></p>
+                </div>
+            </div>
+            
+            <div id="GreenZonePage">
+                <h2>Санітарно-захисна зона</h2>
+                <div class="div">
+                    <h3>Заклад</h3>
+                    <input type="text" id="addressGreenZone" placeholder="Адреса закладу"><br>
+                </div>
+                <br>
+                <div class="div">
+                    <h3>Кількість максимальних викидів речовинами в мг/м<sup>3</sup></h3>
+                    <input type="number" id="CO" placeholder="Чадний газ (CO)" min="0">
+                </div>
+                <br>
+                <center>
+                        <button type="submit" onclick="resultGreenZone()">Отримати результат</button>
+                </center>
+                <br>
+                <div class="div" style="display: none;" id="resultGreenZonePageDiv">
+                    <h3>Результат</h3>
+                    <p id="resultGreenZone"></p>
+                </div>
+            </div>
+            
+            <div id="TrafficPage">
+                <h2>Трафік дороги</h2>
+                <div class="div">
+                    <h3>Розташування трафіку</h3>
+                    <p>Назва вулиці (проспекту)<br>
+                    <input type="text" id="streetName" placeholder="Назва вулиці (проспекту)"></p>
+                    <p>Від якого номеру будівлі на вулиці (проспекту) йдеться трафік<br>
+                    <input type="number" id="startBuilding" placeholder="Номер початкової будівлі" min="0"></p>
+                    <p>До якого номеру будівлі на вулиці (проспекту) йдеться трафік<br>
+                    <input type="number" id="endBuilding" placeholder="Номер останної будівлі" min="0"></p>
+                </div>
+                <br>
+                <div class="div">
+                    <h3>Кількість автомобілів</h3>
+                    <input type="number" id="cars" placeholder="Кількість легкових машин" min="0"><br>
+                    <input type="number" id="trucks" placeholder="Кількість вантажівок" min="0"><br>
+                    <input type="number" id="buses" placeholder="Кількість автобусів та мікроавтобусів" min="0"><br>
+                    <input type="number" id="speed" placeholder="Середня швидкість автомобілів (км/год)" min="0"><br>
+                    <input type="number" id="slope" placeholder="Поздовжній ухил (%)" min="0"><br>
+                </div>
+                <br>
+                <center>
+                        <button type="submit" onclick="resultTraffic()">Отримати результат</button>
+                </center>
+                <br>
+                <div class="div" style="display: none;" id="resultDivGreenZonePage">
+                    <h3>Результат</h3>
+                    <p id="resultTraffic"></p>
+                </div>
+            </div>
+            
+            <div id="AeraSolarPanelsPage">
+                <h2>Потрібна площа сонячний панелей</h2>
+                <div class="div">
+                    <h3>Кількість енергії, яку виробляе сонячна батарея:</h3>
+                    <input type="radio" name="solarEnergyChoise" value="E" checked>Відомо кількість енергії сонячної батареї<br>
+                    <input type="number" id="energyValue" placeholder="Кількість енергії, яку виробляе сонячна батарея (Дж)" min="0"><br>
+                    
+                    <input type="radio" name="solarEnergyChoise" value="P">Відомий потенціал та ефективність сонячної батареї<br>
+                    <input type="number" id="effectionOfPanel" placeholder="Ефективність сонячної батареї (%)" min="0"><br>
+                    <input type="number" id="potentialOfPanel" placeholder="Потенціал сонячної батареї (ГДж/м3)" min="0"></p>
+                </div>
+                <br>
+                <div class="div">
+                    <h3>Кількість енергії, яка виробляється при спалюванні палив:</h3>
+                    <input type="number" id="energyFromFuel" placeholder="Кількість енергії, яка виробляється при спалюванні палив (Дж)" min="0"><br>
+                </div>
+                <br>
+                <center>
+                        <button type="submit" onclick="resultSolarAeraPanels()">Отримати результат</button>
+                </center>
+                <br>
+                <div class="div" style="display: none;" id="resultSolarDiv">
+                    <h3>Результат</h3>
+                    <p id="resultSolarAeraPanels"></p>
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>
+
+
